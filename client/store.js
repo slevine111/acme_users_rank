@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const GET_ALL_USERS = 'GET_ALL_USERS'
 const GET_USERS_AFTER_DELETE = 'GET_USERS_AFTER_DELETE'
+const GET_USERS_AFTER_CREATE = 'GET_USERS_AFTER_CREATE'
 
 const getAllUsers = users => {
   return {
@@ -16,6 +17,13 @@ const getUsersAfterDelete = userId => {
   return {
     type: GET_USERS_AFTER_DELETE,
     userId
+  }
+}
+
+const getUsersAfterCreate = newUser => {
+  return {
+    type: GET_USERS_AFTER_CREATE,
+    newUser
   }
 }
 
@@ -37,12 +45,36 @@ export const deleteUser = userId => {
   }
 }
 
+export const createNewUser = user => {
+  return dispatch => {
+    user.bio = user.bio
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`
+        }
+        return word.toLowerCase()
+      })
+      .join(' ')
+    return axios
+      .post('/api/users', user)
+      .then(({ data }) => dispatch(getUsersAfterCreate(data)))
+      .catch(err => console.error(err))
+  }
+}
+
 const reducer = (state = { users: [] }, action) => {
   switch (action.type) {
     case GET_ALL_USERS:
-      return { users: action.users }
+      return { ...state, users: action.users }
     case GET_USERS_AFTER_DELETE:
-      return { users: state.users.filter(user => user.id !== action.userId) }
+      return {
+        ...state,
+        users: state.users.filter(user => user.id !== action.userId)
+      }
+    case GET_USERS_AFTER_CREATE:
+      action.newUser.rank = Number(action.newUser.rank)
+      return { ...state, users: [...state.users, action.newUser] }
     default:
       return state
   }
