@@ -1,8 +1,18 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { getHighestRankedUsers } from '../helperfunctions'
 
-const Navbar = ({ location }) => {
+const Navbar = ({ location, users }) => {
   const { pathname } = location
+  const highestRankedUsers = getHighestRankedUsers(users)
+  const topRankedHeaderString = !highestRankedUsers.length
+    ? 'Top Ranked'
+    : `Top Ranked (${highestRankedUsers[0].name}${
+        highestRankedUsers.length === 1
+          ? ''
+          : ` and ${highestRankedUsers.length - 1} more`
+      })`
   return (
     <ul className="nav nav-tabs">
       <Link
@@ -31,10 +41,15 @@ const Navbar = ({ location }) => {
           pathname === '/users/top' ? 'active' : ''
         }`}
       >
-        Top Ranked
+        {topRankedHeaderString}
       </Link>
     </ul>
   )
 }
 
-export default Navbar
+const mapStateToProps = state => state
+
+export default connect(
+  mapStateToProps,
+  null
+)(Navbar)

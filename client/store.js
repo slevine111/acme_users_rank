@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import axios from 'axios'
+import { makeStringTitleCase } from './helperfunctions'
 
 const GET_ALL_USERS = 'GET_ALL_USERS'
 const GET_USERS_AFTER_DELETE = 'GET_USERS_AFTER_DELETE'
@@ -55,17 +56,12 @@ export const deleteUser = userId => {
 
 export const createNewUser = user => {
   return dispatch => {
-    user.bio = user.bio
-      .split(' ')
-      .map((word, index) => {
-        if (index === 0) {
-          return `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`
-        }
-        return word.toLowerCase()
-      })
-      .join(' ')
     return axios
-      .post('/api/users', user)
+      .post('/api/users', {
+        ...user,
+        name: makeStringTitleCase(user.name),
+        bio: makeStringTitleCase(user.bio)
+      })
       .then(({ data }) => dispatch(getUsersAfterCreate(data)))
       .catch(err => console.error(err))
   }
@@ -74,7 +70,11 @@ export const createNewUser = user => {
 export const updateUser = changedUser => {
   return dispatch => {
     return axios
-      .put(`/api/users/${changedUser.id}`, changedUser)
+      .put(`/api/users/${changedUser.id}`, {
+        ...changedUser,
+        name: makeStringTitleCase(changedUser.name),
+        bio: makeStringTitleCase(changedUser.bio)
+      })
       .then(({ data }) => dispatch(getUsersAfterUpdate(data)))
       .catch(err => console.error(err))
   }
