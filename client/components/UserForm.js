@@ -43,7 +43,6 @@ class UserForm extends Component {
         bio,
         rank
       })
-      console.log(users)
     }
     this.addOrRemoveOutFocusEventListeners('add')
   }
@@ -102,7 +101,7 @@ class UserForm extends Component {
   render() {
     const { error, textTips } = this.state
     const canNotSubmit =
-      textTips.name !== '' || textTips.bio !== '' || textTips.rank != ''
+      textTips.name !== '' || textTips.bio !== '' || textTips.rank !== ''
     return (
       <form onSubmit={this.handleSubmit} className="user-form">
         {this.createField('name')}
