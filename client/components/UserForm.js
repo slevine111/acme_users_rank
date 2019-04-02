@@ -7,21 +7,7 @@ import { makeStringTitleCase } from '../helperfunctions'
 class UserForm extends Component {
   constructor(props) {
     super(props)
-    const { id } = this.props
-    this.state = {
-      name: '',
-      bio: '',
-      rank: '',
-      error: '',
-      textTips: {
-        name: id ? '' : 'Field is required',
-        bio: id ? '' : 'Field is required',
-        rank: id ? '' : 'Field is required'
-      },
-      nameFieldHasBeenClicked: !!id,
-      bioFieldHasBeenClicked: !!id,
-      rankFieldHasBeenClicked: !!id
-    }
+    this.state = this.generateStateObject(!!this.props.id)
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.generateFieldTextTip = TextTipsClass.generateFieldTextTip.bind(this)
@@ -49,6 +35,29 @@ class UserForm extends Component {
 
   componentWillUnmount() {
     this.addOrRemoveOutFocusEventListeners('remove')
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.id !== prevProps.id) {
+      this.setState(this.generateStateObject(false))
+    }
+  }
+
+  generateStateObject(idPropExists) {
+    return {
+      name: '',
+      bio: '',
+      rank: '',
+      error: '',
+      textTips: {
+        name: idPropExists ? '' : 'Field is required',
+        bio: idPropExists ? '' : 'Field is required',
+        rank: idPropExists ? '' : 'Field is required'
+      },
+      nameFieldHasBeenClicked: idPropExists,
+      bioFieldHasBeenClicked: idPropExists,
+      rankFieldHasBeenClicked: idPropExists
+    }
   }
 
   onChange({ target }) {
