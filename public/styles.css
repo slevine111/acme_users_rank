@@ -23,3 +23,16 @@ h2 {
 .badge {
   font-size: 1rem;
 }
+
+.red-border {
+  border-color: red;
+  background: white;
+}
+
+.help-text-size {
+  font-size: 14px;
+}
+
+.red-font {
+  color: red;
+}

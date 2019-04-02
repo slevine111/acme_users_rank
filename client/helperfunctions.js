@@ -4,13 +4,17 @@ export const getHighestRankedUsers = users => {
 }
 
 export const makeStringTitleCase = string => {
-  return string
-    .split(' ')
-    .map((word, index) => {
-      if (index === 0) {
-        return `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`
-      }
-      return word.toLowerCase()
-    })
-    .join(' ')
+  if (string) {
+    return string
+      .split(' ')
+      .map((word, index) => {
+        if (index === 0) {
+          return `${word[0].toUpperCase()}${word.slice(1).toLowerCase()}`
+        }
+        return word.toLowerCase()
+      })
+      .join(' ')
+  } else {
+    return string
+  }
 }

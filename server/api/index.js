@@ -47,6 +47,11 @@ app.use((req, res, next) => {
 })
 
 app.use((err, req, res, next) => {
-  console.error(err)
-  res.status(err.status || 500).send(err.message || 'Internal server error')
+  let errorToSend
+  if (err.errors) {
+    errorToSend = err.errors.map(error => error.message)
+  } else {
+    errorToSend = 'An internal server or network error has occured'
+  }
+  res.status(err.status || 500).send(errorToSend)
 })

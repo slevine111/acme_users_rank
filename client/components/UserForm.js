@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createNewUser, updateUser } from '../store'
-import {} from '../helperfunctions'
+import TextTipsClass from '../TextTipsClass'
+import { makeStringTitleCase } from '../helperfunctions'
 
 class UserForm extends Component {
   constructor() {
@@ -9,11 +10,26 @@ class UserForm extends Component {
     this.state = {
       name: '',
       bio: '',
-      rank: ''
+      rank: '',
+      error: '',
+      textTips: {
+        name: 'Field is required',
+        bio: 'Field is required',
+        rank: 'Field is required'
+      },
+      nameFieldHasBeenClicked: false,
+      bioFieldHasBeenClicked: false,
+      rankFieldHasBeenClicked: false
     }
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleCancel = this.handleCancel.bind(this)
+    this.generateFieldTextTip = TextTipsClass.generateFieldTextTip.bind(this)
+    this.updateNameTextTip = TextTipsClass.updateNameTextTip.bind(this)
+    this.updateBioTextTip = TextTipsClass.updateBioTextTip.bind(this)
+    this.updateRankTextTip = TextTipsClass.updateRankTextTip.bind(this)
+    this.addOrRemoveOutFocusEventListeners = TextTipsClass.addOrRemoveOutFocusEventListeners.bind(
+      this
+    )
   }
 
   componentDidMount() {
@@ -27,12 +43,18 @@ class UserForm extends Component {
         rank
       })
     }
+    this.addOrRemoveOutFocusEventListeners('add')
+  }
+
+  componentWillUnmount() {
+    this.addOrRemoveOutFocusEventListeners('remove')
   }
 
   onChange({ target }) {
     this.setState({
       [target.name]: target.value
     })
+    this[`update${makeStringTitleCase(target.name)}TextTip`](target.value)
   }
 
   handleSubmit(event) {
@@ -41,49 +63,77 @@ class UserForm extends Component {
     const rankAsNumber = Number(this.state.rank)
     const goToTopRankedView = users.every(user => rankAsNumber <= user.rank)
     if (id) {
-      return updateUser({ ...this.state, id, rank: rankAsNumber }).then(() =>
-        history.push(`/users${goToTopRankedView ? '/top' : ''}`)
-      )
+      return updateUser({ ...this.state, id, rank: rankAsNumber })
+        .then(() => history.push(`/users${goToTopRankedView ? '/top' : ''}`))
+        .catch(err => this.setState({ error: err.response.data }))
     }
-    return createNewUser(this.state).then(() =>
-      history.push(`/users${goToTopRankedView ? '/top' : ''}`)
-    )
-  }
-
-  handleCancel() {
-    const { users, history } = this.props
-    const rankAsNumber = Number(this.state.rank)
-    const goToTopRankedView = users.every(user => rankAsNumber <= user.rank)
-    history.push(`/users${goToTopRankedView ? '/top' : ''}`)
+    return createNewUser({ ...this.state, rank: rankAsNumber })
+      .then(() => history.push(`/users${goToTopRankedView ? '/top' : ''}`))
+      .catch(err => {
+        this.setState({ error: err.response.data })
+      })
   }
 
   createField(fieldName) {
+    const fieldHasBeenClickedState = this.state[
+      `${fieldName}FieldHasBeenClicked`
+    ]
+    const makeBorderRed =
+      (this.state.textTips[fieldName] !== '' && fieldHasBeenClickedState) ||
+      !['', 'Field is required'].includes(this.state.textTips[fieldName])
     return (
       <div className="form-group">
         <label htmlFor={fieldName}>{fieldName}</label>
         <input
           type="text"
+          id={`${fieldName}-input`}
           name={fieldName}
           value={this.state[fieldName]}
           onChange={this.onChange}
-          className="form-control"
+          className={`form-control ${makeBorderRed ? 'red-border' : ''}`}
         />
+        {this.generateFieldTextTip(fieldName)}
       </div>
     )
   }
 
   render() {
+    const { error, textTips } = this.state
+    const canNotSubmit =
+      textTips.name !== '' || textTips.bio !== '' || textTips.rank != ''
     return (
       <form onSubmit={this.handleSubmit} className="user-form">
         {this.createField('name')}
         {this.createField('bio')}
         {this.createField('rank')}
-        <button type="submit" className="btn btn-primary">
+        {error && (
+          <div className="alert alert-danger">
+            {Array.isArray(error) ? (
+              <div>
+                {' '}
+                You have the following errors:
+                <ul>
+                  {error.map((curError, idx) => (
+                    <li key={idx}>{curError}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              error
+            )}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={canNotSubmit}
+        >
           {this.props.id ? 'Edit' : 'Create'}
         </button>
         <button
           type="button"
-          onClick={this.handleCancel}
+          onClick={() => this.props.history.goBack()}
           className="btn btn-secondary"
         >
           Cancel

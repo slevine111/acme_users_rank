@@ -63,7 +63,6 @@ export const createNewUser = user => {
         bio: makeStringTitleCase(user.bio)
       })
       .then(({ data }) => dispatch(getUsersAfterCreate(data)))
-      .catch(err => console.error(err))
   }
 }
 
@@ -76,7 +75,6 @@ export const updateUser = changedUser => {
         bio: makeStringTitleCase(changedUser.bio)
       })
       .then(({ data }) => dispatch(getUsersAfterUpdate(data)))
-      .catch(err => console.error(err))
   }
 }
 
