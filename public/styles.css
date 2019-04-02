@@ -1,0 +1,25 @@
+body {
+  margin-top: 20px;
+}
+
+h2 {
+  margin-bottom: 15px;
+}
+
+.name-display {
+  font-weight: bold;
+}
+
+.user-div,
+.user-form {
+  margin-top: 1rem;
+}
+
+.btn-secondary,
+.btn-light {
+  margin-left: 20px;
+}
+
+.badge {
+  font-size: 1rem;
+}

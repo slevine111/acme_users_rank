@@ -4,17 +4,31 @@ import { deleteUser } from '../store'
 
 const User = ({ id, name, bio, rank, deleteUser, history }) => {
   return (
-    <ul key={id}>
-      <li>{name}</li>
-      <li>{bio}</li>
-      <li>{rank}</li>
-      <button type="button" onClick={() => deleteUser(id)}>
-        Delete
-      </button>
-      <button type="button" onClick={() => history.push(`/users/${id}`)}>
-        Edit
-      </button>
-    </ul>
+    <div className="list-group-item">
+      <div className="name-display">{name}</div>
+      <div className="user-div">
+        <i>{bio}</i>
+      </div>
+      <div className="user-div">
+        <div className="badge badge-success">{rank}</div>
+      </div>
+      <div className="user-div">
+        <button
+          type="button"
+          onClick={() => deleteUser(id)}
+          className="btn btn-danger"
+        >
+          Delete
+        </button>
+        <button
+          type="button"
+          onClick={() => history.push(`/users/${id}`)}
+          className="btn btn-light"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
   )
 }
 

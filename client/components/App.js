@@ -17,7 +17,7 @@ class App extends Component {
         <h2>Acme Users Rank</h2>
         <HashRouter>
           <Fragment>
-            <Navbar />
+            <Route component={Navbar} />
             <Switch>
               <Route exact path="/" render={() => <h6>Home</h6>} />
               <Route

@@ -1,13 +1,40 @@
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
-export default () => {
+const Navbar = ({ location }) => {
+  const { pathname } = location
   return (
-    <Fragment>
-      <Link to="/">Home</Link>
-      <Link to="/users">Users</Link>
-      <Link to="/users/create">Create A User</Link>
-      <Link to="/users/top">Top Ranked</Link>
-    </Fragment>
+    <ul className="nav nav-tabs">
+      <Link
+        to="/"
+        className={`nav-item nav-link ${pathname === '/' ? 'active' : ''}`}
+      >
+        Home
+      </Link>
+      <Link
+        to="/users"
+        className={`nav-item nav-link ${pathname === '/users' ? 'active' : ''}`}
+      >
+        Users
+      </Link>
+      <Link
+        to="/users/create"
+        className={`nav-item nav-link ${
+          pathname === '/users/create' ? 'active' : ''
+        }`}
+      >
+        Create A User
+      </Link>
+      <Link
+        to="/users/top"
+        className={`nav-item nav-link ${
+          pathname === '/users/top' ? 'active' : ''
+        }`}
+      >
+        Top Ranked
+      </Link>
+    </ul>
   )
 }
+
+export default Navbar

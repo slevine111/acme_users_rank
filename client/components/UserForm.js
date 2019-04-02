@@ -59,13 +59,14 @@ class UserForm extends Component {
 
   createField(fieldName) {
     return (
-      <div>
+      <div className="form-group">
         <label htmlFor={fieldName}>{fieldName}</label>
         <input
           type="text"
           name={fieldName}
           value={this.state[fieldName]}
           onChange={this.onChange}
+          className="form-control"
         />
       </div>
     )
@@ -73,12 +74,18 @@ class UserForm extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form onSubmit={this.handleSubmit} className="user-form">
         {this.createField('name')}
         {this.createField('bio')}
         {this.createField('rank')}
-        <button type="submit">{this.props.id ? 'Edit' : 'Create'}</button>
-        <button type="button" onClick={this.handleCancel}>
+        <button type="submit" className="btn btn-primary">
+          {this.props.id ? 'Edit' : 'Create'}
+        </button>
+        <button
+          type="button"
+          onClick={this.handleCancel}
+          className="btn btn-secondary"
+        >
           Cancel
         </button>
       </form>

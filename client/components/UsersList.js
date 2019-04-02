@@ -6,7 +6,7 @@ import User from './User'
 const UsersList = ({ users, top, history }) => {
   const usersToDisplay = top ? getHighestRankedUsers(users) : users
   return (
-    <ul>
+    <ul className="list-group">
       {usersToDisplay.map(user => (
         <User key={user.id} {...user} history={history} />
       ))}
