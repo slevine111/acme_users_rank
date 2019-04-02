@@ -36,7 +36,7 @@ app.put('/api/users/:id', (req, res, next) => {
   const { name, bio, rank } = req.body
   User.findByPk(req.params.id)
     .then(user => user.update({ name, bio, rank }))
-    .then(user => res.json(user))
+    .then(newUser => res.json(newUser))
     .catch(next)
 })
 

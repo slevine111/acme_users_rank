@@ -29,9 +29,7 @@ class App extends Component {
               />
               <Route
                 path="/users/create"
-                render={({ history }) => (
-                  <UserForm history={history} useOfForm="Create" />
-                )}
+                render={({ history }) => <UserForm history={history} />}
               />
               <Route
                 path="/users/top"
@@ -42,11 +40,7 @@ class App extends Component {
               <Route
                 path="/users/:id"
                 render={({ match, history }) => (
-                  <UserForm
-                    history={history}
-                    useOfForm="Edit"
-                    id={Number(match.params.id)}
-                  />
+                  <UserForm history={history} id={Number(match.params.id)} />
                 )}
               />
             </Switch>

@@ -5,6 +5,7 @@ import axios from 'axios'
 const GET_ALL_USERS = 'GET_ALL_USERS'
 const GET_USERS_AFTER_DELETE = 'GET_USERS_AFTER_DELETE'
 const GET_USERS_AFTER_CREATE = 'GET_USERS_AFTER_CREATE'
+const GET_USERS_AFTER_UPDATE = 'GET_USERS_AFTER_UPDATE'
 
 const getAllUsers = users => {
   return {
@@ -24,6 +25,13 @@ const getUsersAfterCreate = newUser => {
   return {
     type: GET_USERS_AFTER_CREATE,
     newUser
+  }
+}
+
+const getUsersAfterUpdate = changedUser => {
+  return {
+    type: GET_USERS_AFTER_UPDATE,
+    changedUser
   }
 }
 
@@ -63,6 +71,15 @@ export const createNewUser = user => {
   }
 }
 
+export const updateUser = changedUser => {
+  return dispatch => {
+    return axios
+      .put(`/api/users/${changedUser.id}`, changedUser)
+      .then(({ data }) => dispatch(getUsersAfterUpdate(data)))
+      .catch(err => console.error(err))
+  }
+}
+
 const reducer = (state = { users: [] }, action) => {
   switch (action.type) {
     case GET_ALL_USERS:
@@ -75,6 +92,13 @@ const reducer = (state = { users: [] }, action) => {
     case GET_USERS_AFTER_CREATE:
       action.newUser.rank = Number(action.newUser.rank)
       return { ...state, users: [...state.users, action.newUser] }
+    case GET_USERS_AFTER_UPDATE:
+      return {
+        ...state,
+        users: state.users.map(user =>
+          user.id === Number(action.changedUser.id) ? action.changedUser : user
+        )
+      }
     default:
       return state
   }

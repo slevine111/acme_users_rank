@@ -1,12 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { createNewUser } from '../store'
+import { createNewUser, updateUser } from '../store'
 import {} from '../helperfunctions'
 
 class UserForm extends Component {
   constructor() {
     super()
-    console.log('thyg')
     this.state = {
       name: '',
       bio: '',
@@ -14,6 +13,20 @@ class UserForm extends Component {
     }
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleCancel = this.handleCancel.bind(this)
+  }
+
+  componentDidMount() {
+    const { users, id } = this.props
+    const selectedUser = users.find(user => user.id === id)
+    if (selectedUser) {
+      const { name, bio, rank } = selectedUser
+      this.setState({
+        name,
+        bio,
+        rank
+      })
+    }
   }
 
   onChange({ target }) {
@@ -23,12 +36,25 @@ class UserForm extends Component {
   }
 
   handleSubmit(event) {
-    const goToTopRankedView = this.props.users.every(
-      user => Number(this.state.rank) <= user.rank
-    )
     event.preventDefault()
-    this.props.createNewUser(this.state)
-    this.props.history.push(`/users${goToTopRankedView ? '/top' : ''}`)
+    const { users, history, createNewUser, updateUser, id } = this.props
+    const rankAsNumber = Number(this.state.rank)
+    const goToTopRankedView = users.every(user => rankAsNumber <= user.rank)
+    if (id) {
+      return updateUser({ ...this.state, id, rank: rankAsNumber }).then(() =>
+        history.push(`/users${goToTopRankedView ? '/top' : ''}`)
+      )
+    }
+    return createNewUser(this.state).then(() =>
+      history.push(`/users${goToTopRankedView ? '/top' : ''}`)
+    )
+  }
+
+  handleCancel() {
+    const { users, history } = this.props
+    const rankAsNumber = Number(this.state.rank)
+    const goToTopRankedView = users.every(user => rankAsNumber <= user.rank)
+    history.push(`/users${goToTopRankedView ? '/top' : ''}`)
   }
 
   createField(fieldName) {
@@ -46,14 +72,13 @@ class UserForm extends Component {
   }
 
   render() {
-    const { history, useOfForm } = this.props
     return (
       <form onSubmit={this.handleSubmit}>
         {this.createField('name')}
         {this.createField('bio')}
         {this.createField('rank')}
-        <button type="submit">{useOfForm}</button>
-        <button type="button" onClick={() => history.push('/users')}>
+        <button type="submit">{this.props.id ? 'Edit' : 'Create'}</button>
+        <button type="button" onClick={this.handleCancel}>
           Cancel
         </button>
       </form>
@@ -69,7 +94,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    createNewUser: newUser => dispatch(createNewUser(newUser))
+    createNewUser: newUser => dispatch(createNewUser(newUser)),
+    updateUser: changedUser => dispatch(updateUser(changedUser))
   }
 }
 
