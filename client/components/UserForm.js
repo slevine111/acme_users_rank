@@ -5,21 +5,22 @@ import TextTipsClass from '../TextTipsClass'
 import { makeStringTitleCase } from '../helperfunctions'
 
 class UserForm extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
+    const { id } = this.props
     this.state = {
       name: '',
       bio: '',
       rank: '',
       error: '',
       textTips: {
-        name: 'Field is required',
-        bio: 'Field is required',
-        rank: 'Field is required'
+        name: id ? '' : 'Field is required',
+        bio: id ? '' : 'Field is required',
+        rank: id ? '' : 'Field is required'
       },
-      nameFieldHasBeenClicked: false,
-      bioFieldHasBeenClicked: false,
-      rankFieldHasBeenClicked: false
+      nameFieldHasBeenClicked: !!id,
+      bioFieldHasBeenClicked: !!id,
+      rankFieldHasBeenClicked: !!id
     }
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -42,6 +43,7 @@ class UserForm extends Component {
         bio,
         rank
       })
+      console.log(users)
     }
     this.addOrRemoveOutFocusEventListeners('add')
   }

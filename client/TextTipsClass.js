@@ -24,6 +24,7 @@ class TextTipsClass {
       currentNameValue === ''
         ? 'Field is required'
         : this.props.users
+            .filter(user => (this.props.id ? user.id !== this.props.id : true))
             .map(user => user.name.toLowerCase())
             .includes(currentNameValue.toLowerCase())
         ? 'User has already been added (name is NOT case sensitive). Add another user'
