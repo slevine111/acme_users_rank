@@ -7,7 +7,8 @@ import { makeStringTitleCase } from '../helperfunctions'
 class UserForm extends Component {
   constructor(props) {
     super(props)
-    this.state = this.generateStateObject(!!this.props.id)
+    const { id, users } = this.props
+    this.state = this.generateStateObject(id && users.length)
     this.onChange = this.onChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.generateFieldTextTip = TextTipsClass.generateFieldTextTip.bind(this)
@@ -20,16 +21,6 @@ class UserForm extends Component {
   }
 
   componentDidMount() {
-    const { users, id } = this.props
-    const selectedUser = users.find(user => user.id === id)
-    if (selectedUser) {
-      const { name, bio, rank } = selectedUser
-      this.setState({
-        name,
-        bio,
-        rank
-      })
-    }
     this.addOrRemoveOutFocusEventListeners('add')
   }
 
@@ -38,25 +29,28 @@ class UserForm extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.id !== prevProps.id) {
-      this.setState(this.generateStateObject(false))
+    const { id, users } = this.props
+    if (id !== prevProps.id || users.length !== prevProps.users.length) {
+      this.setState(this.generateStateObject(id && users.length))
     }
   }
 
-  generateStateObject(idPropExists) {
+  generateStateObject(idPropExistsAndUsersLoaded) {
+    const { users, id } = this.props
+    const selectedUser = users.find(user => user.id === id)
     return {
-      name: '',
-      bio: '',
-      rank: '',
+      name: idPropExistsAndUsersLoaded ? selectedUser.name : '',
+      bio: idPropExistsAndUsersLoaded ? selectedUser.bio : '',
+      rank: idPropExistsAndUsersLoaded ? selectedUser.rank : '',
       error: '',
       textTips: {
-        name: idPropExists ? '' : 'Field is required',
-        bio: idPropExists ? '' : 'Field is required',
-        rank: idPropExists ? '' : 'Field is required'
+        name: idPropExistsAndUsersLoaded ? '' : 'Field is required',
+        bio: idPropExistsAndUsersLoaded ? '' : 'Field is required',
+        rank: idPropExistsAndUsersLoaded ? '' : 'Field is required'
       },
-      nameFieldHasBeenClicked: idPropExists,
-      bioFieldHasBeenClicked: idPropExists,
-      rankFieldHasBeenClicked: idPropExists
+      nameFieldHasBeenClicked: idPropExistsAndUsersLoaded,
+      bioFieldHasBeenClicked: idPropExistsAndUsersLoaded,
+      rankFieldHasBeenClicked: idPropExistsAndUsersLoaded
     }
   }
 
